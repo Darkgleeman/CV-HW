@@ -1,0 +1,100 @@
+# -*- coding: utf-8 -*-
+import skimage.io
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+import h5py
+
+
+def save_MCNN(h5_save_path, net):
+    '''
+    @param:
+    h5_save_path: the path that you want to save the net in .h5 file
+    net: the net 
+
+    @retrun:
+    no retrun
+    '''
+    h5_file = h5py.File(h5_save_path, mode = 'w')
+
+    for key, value in net.state_dict().items():
+        h5_file.create_dataset(key, data = value.cpu().numpy())
+
+
+def load_MCNN(h5_save_path, net):
+    '''
+    @param:
+    h5_save_path: the path that you saved net in .h5 file
+    net: the net 
+
+    @retrun:
+    no retrun
+    '''
+
+    # net is a reference 
+    h5_file = h5py.File(h5_save_path, mode = 'w')
+    for key, value in net.state_dict().items():
+        param = torch.from_numpy(np.asarray(h5_file[key]))
+        value.copy_(param)
+
+
+def train(train_data, net):
+    '''
+    @param:
+    train_data: the convolved images
+    net: the net
+
+    @retrun:
+    MSE_running_loss: a list contains all the average MSE loss in one epoch
+    MAE_running_loss: a list contains all the average MAE loss in one epoch
+    '''
+
+    print("Start Trainging!")
+    optimizer = torch.optim.Adam(net.parameters())
+
+    MSE_loss_func = torch.nn.MSELoss(reduce = True, size_average = True)
+    MAE_loss_func = torch.nn.L1Loss(reduce = True, size_average = True)
+
+    MSE_running_loss = []
+    MAE_running_loss = []
+
+    numOfImage = len(train_data)
+
+    # epoches is the total running lap
+    epoches = 100
+    for epoch in range(epoches):
+
+        MSE_running_loss.append(0)
+        MAE_running_loss.append(0)
+
+        for i, data in enumerate(train_data):
+            inputs, labels = data
+            inputs = torch.autograd.Variable(inputs)
+            labels = torch.autograd.Variable(labels)
+
+            # back propagation
+            optimizer.zero_grad()
+            outputs = net(inputs)
+
+            MSE_loss = MSE_loss_func(outputs, labels)
+            MAE_loss = MAE_loss_func(outputs, labels)
+
+            MSE_loss.backward()
+            MAE_loss.backward()
+
+            optimizer.step()
+
+            MSE_running_loss[epoch] += MSE_loss.data[0]
+            MAE_running_loss[epoch] += MSE_loss.data[0]
+
+        # the average loss in one epoch
+        MSE_running_loss[epoch] /= numOfImage
+        MAE_running_loss[epoch] /= numOfImage
+
+    save_MCNN(h5_save_path, net)
+
+    print("End Trainging!")
+
+    return MSE_running_loss, MAE_running_loss
+
+
