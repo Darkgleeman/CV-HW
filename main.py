@@ -44,10 +44,12 @@ def pre_processor():
             for j in range(3):
                 splited_img[i].append(raw_img[h//2*j:h//2*(j+2), w//2*i:w//2*(i+2)]) #split into 9 parts
                 splited_density[i].append(raw_density[h//2*j:h//2*(j+2),w//2*i:w//2*(i+2)])
+
+    return splited_img , splited_density
     
     
 
 if __name__ == "__main__":
     epoch = 100
     for i in range(epoch):
-        pre_processor()
+        patch_to_train , ground_truth = pre_processor()
