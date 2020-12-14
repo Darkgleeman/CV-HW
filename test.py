@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
 import h5py
+import cv2
 from torch.utils.data import DataLoader
 ################### local module ######################
 
@@ -24,8 +25,11 @@ if __name__ == '__main__':
     batch_size = 1
     device = "cpu"
     net = MCNN().to(device)
-    load_MCNN('./model/train/model.h5', net)
-    test_data = DataLoader(dataset=Dataset('test'), batch_size=batch_size, shuffle=False)
+    load_MCNN('./model/train/train_model_35_0.01.h5', net)
+    test_set = Dataset('test')
+    test_set.inputs = [cv2.imread("1_0.jpg")]
+    test_set.labels = [None]
+    test_data = DataLoader(dataset=test_set, batch_size=batch_size, shuffle=False)
 
     print("Start Testing!")
     MSE_loss_func = torch.nn.MSELoss(reduce = True, size_average = True)
@@ -59,7 +63,7 @@ if __name__ == '__main__':
 
             MSE_running_loss[epoch] += MSE_loss.item()
             MAE_running_loss[epoch] += MSE_loss.item()
-    save_MCNN('./model/test/test_model.h5', net)
+    #save_MCNN('./model/test/test_model.h5', net)
     print("End Trainging!")
 
     loss_show(num_loss,'counting loss')

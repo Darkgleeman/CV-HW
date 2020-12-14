@@ -11,7 +11,7 @@ from CNN import MCNN
 from visualize import loss_show
 device = 'cuda'
 
-def save_MCNN(h5_save_path, net):
+def save_MCNN(save_path, net):
     '''
     @param:
     h5_save_path: the path that you want to save the net in .h5 file
@@ -20,13 +20,16 @@ def save_MCNN(h5_save_path, net):
     @retrun:
     no retrun
     '''
+    torch.save(net.state_dict(),save_path)
+    '''
     h5_file = h5py.File(h5_save_path, mode = 'w')
 
     for key, value in net.state_dict().items():
         h5_file.create_dataset(key, data = value.cpu().numpy())
+        '''
 
 
-def load_MCNN(h5_save_path, net):
+def load_MCNN(save_path, net):
     '''
     @param:
     h5_save_path: the path that you saved net in .h5 file
@@ -37,10 +40,15 @@ def load_MCNN(h5_save_path, net):
     '''
 
     # net is a reference 
+    net.load_state_dict(torch.load(save_path))
+    '''
     h5_file = h5py.File(h5_save_path, mode = 'w')
+    net.load_state_dict(h5_file)
+    
     for key, value in net.state_dict().items():
         param = torch.from_numpy(np.asarray(h5_file[key]))
         value.copy_(param)
+        '''
 
 
 def training(train_data, net):

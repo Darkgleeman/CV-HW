@@ -56,8 +56,8 @@ def sort_name(s):
     return key
     
 
-def get_map_pieces(part='partA'):
-    path = 'dataset/' + part + '/train/numpyarrayPiece/*.npy'
+def get_map_pieces(part='partA',mode = "train"):
+    path = 'dataset/' + part + '/'+ mode +'/numpyarrayPiece/*.npy'
     density_maps = glob.glob(path)
     # density_maps = sorted(density_maps, key = lambda x : int(x[x.index('_')+1 : x.index('.')]))
     density_maps = sorted(density_maps, key = lambda x : sort_name(x))
@@ -65,8 +65,8 @@ def get_map_pieces(part='partA'):
     return density_maps
 
 
-def get_img_pieces(part='partA'):
-    path = 'dataset/' + part + '/train/imagePiece/*.jpg'
+def get_img_pieces(part='partA',mode = "train"):
+    path = 'dataset/' + part + '/'+ mode +'/imagePiece/*.jpg'
     train_imgs = glob.glob(path)
     # train_imgs = sorted(train_imgs, key = lambda x : int(x[x.index('_')+1 : x.index('.')]))
     train_imgs = sorted(train_imgs, key = lambda x : sort_name(x))
@@ -75,10 +75,10 @@ def get_img_pieces(part='partA'):
 
 
 class Dataset():
-    def __init__(self, type):
-        self.inputs = get_img_pieces()
-        self.labels = get_map_pieces()
-        self.type = type
+    def __init__(self, mode):
+        self.inputs = get_img_pieces(mode=mode)
+        self.labels = get_map_pieces(mode=mode)
+        self.mode = mode
 
     def __len__(self):
         return len(self.inputs)
