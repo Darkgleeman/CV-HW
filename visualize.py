@@ -21,15 +21,16 @@ def density_show(densityImage):
     # plt.savefig(name, dpi = 600, bbox_inches = 'tight', pad_inches = 0)
     plt.show()
 
-def loss_show(running_loss):
+def loss_show(running_loss, name):
 
     epoches = [i + 1 for i in range(len(running_loss))]
 
     plt.figure()
     plt.grid()
     plt.xlabel("epoch")
-    plt.ylabel("loss")
+    plt.ylabel(name)
     plt.plot(running_loss, epoches, linestyle = '-', color = 'c')
+    # plt.imshow()
     plt.show()
 
 
