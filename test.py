@@ -14,6 +14,7 @@ import CNN
 from CNN import MCNN
 from train import training, save_MCNN, load_MCNN
 from main import Dataset
+from visualize import loss_show
 
 ######################################################
 
@@ -32,6 +33,7 @@ if __name__ == '__main__':
 
     MSE_running_loss = []
     MAE_running_loss = []
+    num_loss = np.ndarray((epoch_num))
     for epoch in range(epoch_num):
         
         MSE_running_loss.append(0)
@@ -51,11 +53,13 @@ if __name__ == '__main__':
             # resize the labels
             labels.resize_(outputs.shape)
 
-
             MSE_loss = MSE_loss_func(outputs, labels)
             MAE_loss = MAE_loss_func(outputs, labels)
+            num_loss[epoch] = abs(outputs.sum() - labels.sum())
 
             MSE_running_loss[epoch] += MSE_loss.item()
             MAE_running_loss[epoch] += MSE_loss.item()
     save_MCNN('./model/test/test_model.h5', net)
     print("End Trainging!")
+
+    loss_show(num_loss,'counting loss')
