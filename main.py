@@ -49,64 +49,36 @@ def pre_processor():    #it is a generator
                 splited_density[i*3+j] = raw_density[:,h//2*j:h//2*(j+2),w//2*i:w//2*(i+2)] #dimension may be wrong
         yield splited_img , splited_density
 
-def sort_name(s):
-    s = s.split('/')[-1]
-    s = s[:-4]
-    key = tuple(s.split('_'))
-    return key
-    
-
-def get_map_pieces(part='partA'):
-    path = 'dataset/' + part + '/train/numpyarrayPiece/*.npy'
-    density_maps = glob.glob(path)
-    # density_maps = sorted(density_maps, key = lambda x : int(x[x.index('_')+1 : x.index('.')]))
-    density_maps = sorted(density_maps, key = lambda x : sort_name(x))
-    density_maps = [np.load(map_name) for map_name in density_maps]
-    return density_maps
 
 
-def get_img_pieces(part='partA'):
-    path = 'dataset/' + part + '/train/imagePiece/*.jpg'
-    train_imgs = glob.glob(path)
-    # train_imgs = sorted(train_imgs, key = lambda x : int(x[x.index('_')+1 : x.index('.')]))
-    train_imgs = sorted(train_imgs, key = lambda x : sort_name(x))
-    train_imgs = [cv2.imread(img_name) for img_name in train_imgs]
-    return train_imgs
-
-
-class Dataset():
-    def __init__(self, type):
-        self.inputs = get_img_pieces()
-        self.labels = get_map_pieces()
-        self.type = type
-
-    def __len__(self):
-        return len(self.inputs)
-
-    def __getitem__(self, index):
-        input = self.inputs[index]
-        label = self.labels[index]
-        pair = {'input':input, 'label':label}
-        return pair
-        
-# if __name__ == "__main__":
-#     epoch = 100
-#     for i in range(epoch):
-#         batch_iterater = pre_processor()
-#         for patch_to_train , ground_truth in batch_iterater:# 2 numpy-array 
-#             pass
 
 if __name__ == "__main__":
 
     device = "cuda"
-
+    # net = MCNN().to(device)
+    # net_dict = torch.load('./model/train/train_model_1000_0.001.ckpt')
+    # net.load_state_dict(net_dict)
     net = MCNN().to(device)
 
-    # hyperparameters
-    batch_size = 1
-    lr = 0.01
-    epoch_num = 100
+    part = 'partB'
+    lr = 0.001
+    training(net, lr=lr, epoches=100, batch_size=20, part=part, type='MSE')
+    training(net, lr=lr, epoches=100, batch_size=20, part=part, type='MAE')
+    
+    training(net, lr=lr, epoches=100, batch_size=10, part=part, type='MSE')
+    training(net, lr=lr, epoches=100, batch_size=10, part=part, type='MAE')
 
-    train_data = DataLoader(dataset=Dataset('train'), batch_size=batch_size, shuffle=True)
+    training(net, lr=lr, epoches=100, batch_size=1, part=part, type='MSE')
+    training(net, lr=lr, epoches=100, batch_size=1, part=part, type='MAE')
+    
+    part = 'partA'
+    lr = 0.001
+    training(net, lr=lr, epoches=200, batch_size=20, part=part, type='MSE')
+    training(net, lr=lr, epoches=200, batch_size=20, part=part, type='MAE')
 
-    training(train_data, net)
+    training(net, lr=lr, epoches=200, batch_size=10, part=part, type='MSE')
+    training(net, lr=lr, epoches=200, batch_size=10, part=part, type='MAE')
+    
+    training(net, lr=lr, epoches=200, batch_size=1, part=part, type='MSE')
+    training(net, lr=lr, epoches=200, batch_size=1, part=part, type='MAE')
+

@@ -29,10 +29,9 @@ def loss_show(running_loss, name):
     plt.grid()
     plt.xlabel("epoch")
     plt.ylabel(name)
-    plt.plot(running_loss, epoches, linestyle = '-', color = 'c')
-    # plt.imshow()
-    plt.show()
-
+    plt.plot(epoches, running_loss, linestyle = '-', color = 'c')
+    plt.savefig(name)
+    # plt.show()
 
 
 if __name__ == "__main__":
