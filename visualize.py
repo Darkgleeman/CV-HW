@@ -21,19 +21,32 @@ def density_show(densityImage):
     # plt.savefig(name, dpi = 600, bbox_inches = 'tight', pad_inches = 0)
     plt.show()
 
-def loss_show(running_loss, name):
+def train_visualize(running_loss, file_name):
+    i = len(file_name) - 1
+    while i > 0 and (file_name[i] != '\\' or file_name[i] != '/'):
+        i -= 1
 
     epoches = [i + 1 for i in range(len(running_loss))]
-
     plt.figure()
     plt.grid()
     plt.xlabel("epoch")
-    plt.ylabel(name)
+    plt.ylabel(file_name[i+1:-3])
     plt.plot(epoches, running_loss, linestyle = '-', color = 'c')
-    plt.savefig(name)
+    plt.savefig(file_name)
     # plt.show()
-def test_loss(running_loss, name):
-    
+
+def test_visualize(running_loss , file_name, epoches):
+    i = len(file_name) - 1
+    while i > 0 and (file_name[i] != '\\' or file_name[i] != '/'):
+        i -= 1
+        
+    plt.figure()
+    plt.grid()
+    plt.xlabel("epoch")
+    plt.ylabel(file_name[i+1:-3])
+    plt.plot(epoches, running_loss, linestyle = '-', color = 'c')
+    plt.savefig(file_name)
+    # plt.show()
 
 if __name__ == "__main__":
     # test of density_show
