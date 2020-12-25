@@ -32,7 +32,8 @@ def loss_show(running_loss, name):
     plt.plot(epoches, running_loss, linestyle = '-', color = 'c')
     plt.savefig(name)
     # plt.show()
-
+def test_loss(running_loss, name):
+    
 
 if __name__ == "__main__":
     # test of density_show

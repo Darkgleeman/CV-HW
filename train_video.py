@@ -15,93 +15,24 @@ from visualize import loss_show
 from torch.utils.data import DataLoader
 device = 'cuda'
 
-def get_density_maps():
-    h5_names = glob.glob('dataset/train/ground-truth-h5/*.h5')
-    h5_names = sorted(h5_names, key = lambda x : int(x[x.index('_')+1 : x.index('.')]))# sort in increasing order
-    density_maps = []# desity_maps with shape(1024, 768), np.array
-    for h5 in h5_names:
-        h5 = h5py.File(h5, 'r')['density']
-        density_map = np.array(h5).T # transpose it to get the consistent size
-        density_maps.append(density_map)
-    return density_maps
 
 
 def get_imgs():
-    train_imgs = glob.glob('dataset/partAfinal/testdata/images/*.jpg')
-    train_imgs = sorted(train_imgs, key=lambda x : int(x[x.index('_')+1 : x.index('.')]))
+    train_imgs = glob.glob('dataset/frames/clip1/*.jpg')
+    train_imgs = sorted(train_imgs, key=lambda x : int(x[x.index('p')+3 : x.index('.')]))
     imgs = [cv2.imread(img_name) for img_name in train_imgs]
     return imgs
 
-
-def get_map_pieces(part='partB', train_type='train'):
-    path = 'dataset/' + part + '/{}/numpyarrayPiece/*.npy'.format(train_type)
-    density_maps = glob.glob(path)
-    # density_maps = sorted(density_maps, key = lambda x : int(x[x.index('_')+1 : x.index('.')]))
-    density_maps = sorted(density_maps, key = lambda x : sort_name(x))
-    # density_maps = sorted(density_maps, key = lambda x : int(x.split('/')[-1].split('.')[0]) )
-    density_maps = [np.load(map_name) for map_name in density_maps]
-    return density_maps
-
-def sort_name(s):
-    s = s.split('/')[-1]
-    s = s[:-4]
-    key = tuple(s.split('_'))
-    return key
-
-def get_img_pieces(part='partB', train_type='train'):
-    # path = 'dataset/' + part + '/imgs/*.jpg'
-    path = 'dataset/' + part + '/{}/imagePiece/*.jpg'.format(train_type)
-    train_imgs = glob.glob(path)
-    train_imgs = sorted(train_imgs, key = lambda x : sort_name(x))
-    train_imgs = [cv2.imread(img_name) for img_name in train_imgs]
-    return train_imgs
-
-
 class Dataset():
-    def __init__(self, part, train_type):
-        self.inputs = get_img_pieces(part = part, train_type=train_type)
-        # self.inputs = get_imgs()
-        self.labels = get_map_pieces(part = part, train_type=train_type)
+    def __init__(self):
+        self.inputs = get_imgs()
 
     def __len__(self):
         return len(self.inputs)
 
     def __getitem__(self, index):
         input = self.inputs[index]
-        label = self.labels[index]
-        pair = {'input':input, 'label':label}
-        return pair
-
-def save_MCNN(h5_save_path, net):
-    '''
-    @param:
-    h5_save_path: the path that you want to save the net in .h5 file
-    net: the net 
-
-    @retrun:
-    no retrun
-    '''
-    h5_file = h5py.File(h5_save_path, mode = 'w')
-
-    for key, value in net.state_dict().items():
-        h5_file.create_dataset(key, data = value.cpu().numpy())
-
-
-def load_MCNN(h5_save_path, net):
-    '''
-    @param:
-    h5_save_path: the path that you saved net in .h5 file
-    net: the net 
-
-    @retrun:
-    no retrun
-    '''
-
-    # net is a reference 
-    h5_file = h5py.File(h5_save_path, mode = 'w')
-    for key, value in net.state_dict().items():
-        param = torch.from_numpy(np.asarray(h5_file[key]))
-        value.copy_(param)
+        return input
 
 def save_info(part, type, epoch, lr, batch_size, net, MSE_running_loss, MAE_running_loss):
     # save the net
