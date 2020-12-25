@@ -14,19 +14,18 @@ def density_show(densityImage):
     plt.axis('off')
     # the width of white margin of x and y direction
     plt.margins(0, 0)
-
     # candidate_color = ['CMRmap', 'YlGnBu_r', 'cubehelix', 'jet', 'terrain']
     # plt.imshow(densityImage, cmap = 'terrain')
     plt.imshow(densityImage, cmap = 'jet')
     # plt.savefig(name, dpi = 600, bbox_inches = 'tight', pad_inches = 0)
     plt.show()
 
-def train_visualize(running_loss, file_name):
+def loss_show(running_loss ,file_name ,epoches = None):
     i = len(file_name) - 1
     while i > 0 and (file_name[i] != '\\' or file_name[i] != '/'):
         i -= 1
-
-    epoches = [i + 1 for i in range(len(running_loss))]
+    if epoches == None:
+        epoches = [i + 1 for i in range(len(running_loss))]
     plt.figure()
     plt.grid()
     plt.xlabel("epoch")
@@ -35,18 +34,18 @@ def train_visualize(running_loss, file_name):
     plt.savefig(file_name)
     # plt.show()
 
-def test_visualize(running_loss , file_name, epoches):
+def MAE_show(MAE_loss ,file_name):
     i = len(file_name) - 1
     while i > 0 and (file_name[i] != '\\' or file_name[i] != '/'):
         i -= 1
-        
+    if epoches == None:
+        epoches = [i + 1 for i in range(len(MAE_loss))]
     plt.figure()
     plt.grid()
-    plt.xlabel("epoch")
+    plt.xlabel("frames")
     plt.ylabel(file_name[i+1:-3])
-    plt.plot(epoches, running_loss, linestyle = '-', color = 'c')
+    plt.plot(epoches, MAE_loss, linestyle = '-', color = 'c')
     plt.savefig(file_name)
-    # plt.show()
 
 if __name__ == "__main__":
     # test of density_show
