@@ -11,7 +11,9 @@ import model
 import train
 import CNN
 from train import training
-from CNN import MCNN
+from CNN import MCNN, MCNN_branch1, MCNN_branch2, MCNN_branch3, initialize_MCNN
+from line_res_mcnn import line_Res_MCNN, line_Res_MCNN_branch1, line_Res_MCNN_branch2, line_Res_MCNN_branch3
+from Res_idea_MCNN import Res_MCNN, Res_MCNN_branch1, Res_MCNN_branch2, Res_MCNN_branch3
 
 ######################################################
 
@@ -55,30 +57,58 @@ def pre_processor():    #it is a generator
 if __name__ == "__main__":
 
     device = "cuda"
-    # net = MCNN().to(device)
-    # net_dict = torch.load('./model/train/train_model_1000_0.001.ckpt')
-    # net.load_state_dict(net_dict)
     net = MCNN().to(device)
+    b1 = Res_MCNN_branch1().to(device)
+    b2 = Res_MCNN_branch2().to(device)
+    b3 = Res_MCNN_branch3().to(device)
 
+    net = Res_MCNN().to(device)
+    # net_dict = torch.load('./newModel/partB/MSE_model_100_1e-05_20.ckpt')
+    # net.load_state_dict(net_dict)
+    
+    # # net = MCNN().to(device)
+
+    # part = 'partB'
+    # lr = 0.00001
+    # training(net, lr=lr, epoches=100, batch_size=20, part=part, type='MSE')
+    # # training(net, lr=lr, epoches=100, batch_size=20, part=part, type='MAE')
+
+    # # training(net, lr=lr, epoches=100, batch_size=1, part=part, type='MSE')
+    # # training(net, lr=lr, epoches=100, batch_size=1, part=part, type='MAE')
+
+    # # training(net, lr=lr, epoches=100, batch_size=10, part=part, type='MSE')
+    # # training(net, lr=lr, epoches=100, batch_size=10, part=part, type='MAE')
+    
+    # part = 'partA'
+    # lr = 0.001
+    # training(net, lr=lr, epoches=100, batch_size=20, part=part, type='MSE')
+    # training(net, lr=lr, epoches=100, batch_size=20, part=part, type='MAE')
+
+    # training(net, lr=lr, epoches=100, batch_size=1, part=part, type='MSE')
+    # training(net, lr=lr, epoches=100, batch_size=1, part=part, type='MAE')
+    
+    # training(net, lr=lr, epoches=100, batch_size=10, part=part, type='MSE')
+    # training(net, lr=lr, epoches=100, batch_size=10, part=part, type='MAE')
+    
+
+    # pre train
+    # col1 = MCNN_branch1().to(device)
+    # col2 = MCNN_branch2().to(device)
+    # col3 = MCNN_branch3().to(device)
+    # part = 'partB'
+    # lr = 0.001
+    # # training(col1, lr=lr, epoches = 100, batch_size=20, part=part, type='MSE', id=1)
+    # # training(col2, lr=lr, epoches = 100, batch_size=20, part=part, type='MSE', id=2)
+    # training(col3, lr=lr, epoches = 100, batch_size=20, part=part, type='MSE')
+
+
+    # train the whole model with pre-trained columns
+    # net = MCNN().to(device)
+    # d1 = torch.load('./model/partB/pretrain1/MSE_model_70_0.001_20.ckpt')
+    # d2 = torch.load('./model/partB/pretrain2/MSE_model_45_0.001_20.ckpt')
+    # d3 = torch.load('./model/partB/pretrain3/MSE_model_55_0.001_20.ckpt')
+    # dict = initialize_MCNN(d1, d2, d3, net)
+    # net.load_state_dict(dict)
     part = 'partB'
-    lr = 0.001
+    lr = 0.0001
     training(net, lr=lr, epoches=100, batch_size=20, part=part, type='MSE')
-    training(net, lr=lr, epoches=100, batch_size=20, part=part, type='MAE')
-    
-    training(net, lr=lr, epoches=100, batch_size=10, part=part, type='MSE')
-    training(net, lr=lr, epoches=100, batch_size=10, part=part, type='MAE')
-
-    training(net, lr=lr, epoches=100, batch_size=1, part=part, type='MSE')
-    training(net, lr=lr, epoches=100, batch_size=1, part=part, type='MAE')
-    
-    part = 'partA'
-    lr = 0.001
-    training(net, lr=lr, epoches=200, batch_size=20, part=part, type='MSE')
-    training(net, lr=lr, epoches=200, batch_size=20, part=part, type='MAE')
-
-    training(net, lr=lr, epoches=200, batch_size=10, part=part, type='MSE')
-    training(net, lr=lr, epoches=200, batch_size=10, part=part, type='MAE')
-    
-    training(net, lr=lr, epoches=200, batch_size=1, part=part, type='MSE')
-    training(net, lr=lr, epoches=200, batch_size=1, part=part, type='MAE')
-
